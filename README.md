@@ -96,25 +96,44 @@ COLORS.XML:
 
 
 
-MAINACTIVITY.KT:
-
-
 package com.example.app_2510
 
 import android.os.Bundle
 //import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.example.app_2510.databinding.ActivityMainBinding
+
 //import androidx.core.view.ViewCompat
 //import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
+    
+    lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //arrancar acfuhbeiufhieha
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        
+
 
         }
     }
 }
+
+
+
+
+
+PREGUNTAS DE QUIZ:
+
+activity = pantalla
+
+los strings se ubican en: res/values/strings.xml
+
+los colores se ubican en: res/values/colors.xml
+
+si se modifica una coma en cualquiera de los gradles toca sincronizar
 
 
 
