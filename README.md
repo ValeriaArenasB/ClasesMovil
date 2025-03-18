@@ -131,6 +131,123 @@ private fun pedirPermiso(context: Activity, permiso: String, justificacion: Stri
 
 
 
+package com.example.application1
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.example.application1.databinding.ActivityGpsBinding
+import com.google.android.gms.location.*
+
+class Gps : AppCompatActivity() {
+
+    private lateinit var binding: ActivityGpsBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityGpsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // Inicializar solicitud de ubicación
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+            .setMinUpdateIntervalMillis(3000)
+            .build()
+
+        // Configurar callback para recibir ubicación en tiempo real
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.lastLocation?.let { location ->
+                    updateUI(location)
+                }
+            }
+        }
+
+        permissionInit()  // Verifica permisos al iniciar
+
+        binding.btnGetLocation.setOnClickListener {
+            getLastLocation()
+        }
+    }
+
+    // Verifica permisos
+    private fun permissionInit() {
+        if (!permissionsGranted()) {
+            userPermission()
+        } else {
+            startLocationUpdates() // Si los permisos están, inicia actualizaciones
+        }
+    }
+
+    // Verifica si los permisos fueron concedidos
+    private fun permissionsGranted(): Boolean {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // Solicita permisos al usuario
+    private fun userPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+    }
+
+    // Obtener última ubicación conocida
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        if (!permissionsGranted()) {
+            Toast.makeText(this, "Permiso de ubicación no concedido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                Log.d("GPS", "Ubicación obtenida: Lat ${location.latitude}, Lon ${location.longitude}")
+                updateUI(location)
+            } else {
+                Log.e("GPS", "No se pudo obtener la ubicación. Iniciando actualización...")
+                Toast.makeText(this, "Esperando ubicación...", Toast.LENGTH_SHORT).show()
+                startLocationUpdates() // Si no hay ubicación, pedir una nueva
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("GPS", "Error al obtener la ubicación: ${exception.message}")
+            Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Iniciar actualizaciones en tiempo real
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates() {
+        if (!permissionsGranted()) return
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        Toast.makeText(this, "Esperando nueva ubicación...", Toast.LENGTH_SHORT).show()
+    }
+
+    // Detener actualizaciones de ubicación cuando la app está en segundo plano
+    override fun onPause() {
+        super.onPause()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    // Actualiza la interfaz con la nueva ubicación
+    private fun updateUI(location: Location) {
+        binding.tvLatitude.text = "Latitud: ${location.latitude}"
+        binding.tvLongitude.text = "Longitud: ${location.longitude}"
+        binding.tvElevation.text = "Elevación: ${location.altitude}"
+    }
+}
+
+
+
 
 
 
