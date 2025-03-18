@@ -49,6 +49,7 @@ QUIZ 4 - PERMISOS
 
 
 
+```kotlin
 
         //dentro del onCreate
         when {
@@ -73,8 +74,6 @@ QUIZ 4 - PERMISOS
 
             }
         }
-
-
 
 
 
@@ -127,13 +126,15 @@ private fun pedirPermiso(context: Activity, permiso: String, justificacion: Stri
         }
     }
 
+```
 
 
 
+# SUSCRIPCION A UBICACION CON ACTUALIZACIONES AUTOMATICAS
+## y calcular distancia al aeropuerto BOG
 
 
-
-
+```kotlin
 package com.example.application1
 
 import android.Manifest
@@ -266,10 +267,11 @@ class Gps : AppCompatActivity() {
 }
 
 
+```
 
 
 
-
+```xml
 
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -317,5 +319,5 @@ class Gps : AppCompatActivity() {
 
 </LinearLayout>
 
-
+```
 
