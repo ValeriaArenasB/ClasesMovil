@@ -131,6 +131,9 @@ private fun pedirPermiso(context: Activity, permiso: String, justificacion: Stri
 
 
 
+
+
+
 package com.example.application1
 
 import android.Manifest
@@ -238,13 +241,30 @@ class Gps : AppCompatActivity() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    // Actualiza la interfaz con la nueva ubicación
     private fun updateUI(location: Location) {
-        binding.tvLatitude.text = "Latitud: ${location.latitude}"
-        binding.tvLongitude.text = "Longitud: ${location.longitude}"
+        val userLat = location.latitude
+        val userLon = location.longitude
+
+        binding.tvLatitude.text = "Latitud: $userLat"
+        binding.tvLongitude.text = "Longitud: $userLon"
         binding.tvElevation.text = "Elevación: ${location.altitude}"
+
+        // Coordenadas del Aeropuerto El Dorado
+        val airportLat = 4.7016
+        val airportLon = -74.1469
+
+        // Calcular la distancia
+        val airportLocation = Location("").apply {
+            latitude = airportLat
+            longitude = airportLon
+        }
+
+        val distance = location.distanceTo(airportLocation) / 1000  // Convertir a KM
+        binding.tvDistance.text = "Distancia al Aeropuerto: %.2f km".format(distance)
     }
+
 }
+
 
 
 
@@ -284,8 +304,18 @@ class Gps : AppCompatActivity() {
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Obtener Ubicación"/>
-</LinearLayout>
 
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distancia al Aeropuerto: -- km"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+
+</LinearLayout>
 
 
 
