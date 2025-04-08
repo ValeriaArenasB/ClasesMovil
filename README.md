@@ -434,20 +434,3 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 ´´´
 
 
-
-
-
-LOCAL PROPERTIES:
-
-
-
-## This file must *NOT* be checked into Version Control Systems,
-# as it contains information specific to your local configuration.
-#
-# Location of the SDK. This is only used by Gradle.
-# For customization when using a Version Control System, please read the
-# header note.
-#Tue Apr 08 10:21:48 COT 2025
-sdk.dir=/Users/sistemas/Library/Android/sdk
-MAPS_API_KEY=AIzaSyCS-p4yFNFLYzE4LlcXlnHIMIuDWIGcDv0
-
