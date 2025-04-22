@@ -431,6 +431,170 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 }
-´´´
+```
+
+
+
+
+
+---
+---
+
+## CLASE FIREBASE:
+
+
+
+### Signin simple con autenticacion, y mandando UID por intent:
+
+
+
+```
+package com.example.application1
+
+import android.content.ContentValues.TAG
+import android.content.Intent
+import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.application1.databinding.ActivityFirebaseBinding
+import com.example.application1.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+
+
+class FirebaseActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityFirebaseBinding
+
+    private lateinit var auth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initialize binding
+        binding = ActivityFirebaseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Initialize Firebase Auth
+        auth = Firebase.auth
+
+        // Sign in button click listener
+        binding.Boton1.setOnClickListener {
+            val email = binding.CorreoTxt.text.toString()
+            val password = binding.PassTxt.text.toString()
+
+            // Validate email and password before calling Firebase Auth
+            if (email.isBlank() || password.isBlank()) {
+                Toast.makeText(this, "Por favor ingrese todos los datos", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            // Perform Firebase sign-in
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign-in successful
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful)
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        // Sign-in failed
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        binding.CorreoTxt.setText("")
+                        binding.PassTxt.setText("")
+                    }
+                }
+        }
+
+        binding.Boton2.setOnClickListener {
+            val intent = Intent(this, OSMActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun validateForm(): Boolean {
+        var valid = true
+        val email = binding.CorreoTxt.text.toString()
+        if (TextUtils.isEmpty(email)) {
+            binding.CorreoTxt.error = "Required."
+            valid = false
+        } else {
+            binding.CorreoTxt.error = null
+        }
+        val password = binding.PassTxt.text.toString()
+        if (TextUtils.isEmpty(password)) {
+            binding.PassTxt.error = "Required."
+            valid = false
+        } else {
+            binding.PassTxt.error = null
+        }
+        return valid
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
+
+
+    // el que revisa si ya esta autenticado. ESTE MANDA A LA OTRA PANTALLA, NO EL BOTON
+    private fun updateUI(currentUser: FirebaseUser?) {
+        if (currentUser != null) {
+            val intent = Intent(this, UidActivity::class.java)
+            intent.putExtra("uid", currentUser.uid)  // Enviamos el UID por el intent
+            startActivity(intent)
+        } else {
+            binding.CorreoTxt.setText("")
+            binding.PassTxt.setText("")
+        }
+    }
+
+
+
+
+    private fun signInUser(email: String, password: String){
+        if(validateForm() && isEmailValid(email)){
+            auth.signInWithEmailAndPassword(email,password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+// Sign in success, update UI
+                        Log.d(TAG, "signInWithEmail:success:")
+                        val user = auth.currentUser
+                        updateUI(auth.currentUser)
+                    } else {
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        Toast.makeText(this, "Authentication failed.",
+                            Toast.LENGTH_SHORT).show()
+                        updateUI(null)
+                    }
+                }
+        }
+    }
+
+
+    private fun isEmailValid(email: String): Boolean {
+        if (!email.contains("@") ||
+            !email.contains(".") ||
+            email.length < 5)
+            return false
+        return true
+    }
+
+
+
+
+}
+```
+
+
 
 
